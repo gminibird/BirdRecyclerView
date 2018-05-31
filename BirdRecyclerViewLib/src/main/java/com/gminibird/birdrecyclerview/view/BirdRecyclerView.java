@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -304,6 +303,7 @@ public class BirdRecyclerView extends RecyclerView {
                 mUpRefreshListener.onRefresh();
             }
         } else {
+            scrollToPosition(mWrapAdapter.getItemCount());
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -510,7 +510,7 @@ public class BirdRecyclerView extends RecyclerView {
         setOnUpChangeListener(changeL);
     }
 
-    private void initUpRefreshView(RecyclerViewHolder holder) {
+    private void initUpRefreshView(final RecyclerViewHolder holder) {
         mUpRefreshView = holder.getViewById(R.id.refresh_view);
         mUpRefreshView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
@@ -518,20 +518,18 @@ public class BirdRecyclerView extends RecyclerView {
                 mUpRefreshView.post(new Runnable() {
                     @Override
                     public void run() {
-                        int childHeight = mUpRefreshView.getHeight();
-                        for (int i = isDownRefreshable ? 1 : 0; i < getChildCount(); i++) {
-                            childHeight += getChildAt(i).getHeight();
-                            if (childHeight >= getHeight()) {
-                                mUpRefreshView.setVisibility(VISIBLE);
-                                isUpRefreshViewVisible = true;
-                                return;
-                            }
+                        if (holder.getView().getBottom() >= getBottom()) {
+                            mUpRefreshView.setVisibility(VISIBLE);
+                            isUpRefreshViewVisible = true;
+
+                        } else {
+                            mUpRefreshView.setVisibility(INVISIBLE);
+                            isUpRefreshViewVisible = false;
                         }
-                        mUpRefreshView.setVisibility(INVISIBLE);
-                        isUpRefreshViewVisible = false;
                     }
                 });
             }
+
             @Override
             public void onViewDetachedFromWindow(View v) {
             }

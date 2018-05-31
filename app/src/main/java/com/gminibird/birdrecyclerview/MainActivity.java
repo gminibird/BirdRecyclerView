@@ -55,16 +55,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                itemList.add(new SimpleItem("加载item"));
-                                adapter.notifyItemInserted(itemList.size() - 1);
+                                itemList.addAll(createList());
                                 recyclerView.setUpRefreshing(false);
+                                adapter.notifyItemRangeInserted(itemList.size() ,createList().size());
                             }
                         });
                     }
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private List<IRecyclerItem> createList() {
         List<IRecyclerItem> items = new ArrayList<>();
         IRecyclerItem item;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             item = new SimpleItem("simple_item : " + i);
             items.add(item);
         }

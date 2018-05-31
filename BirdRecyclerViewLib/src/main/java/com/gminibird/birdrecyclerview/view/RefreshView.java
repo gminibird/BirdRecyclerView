@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -87,13 +86,6 @@ public class RefreshView extends View {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
         initAnimator();
-        post(new Runnable() {
-            @Override
-            public void run() {
-                Log.e(getClass().getName(),"post执行");
-
-            }
-        });
     }
 
     private void initAnimator() {
@@ -209,7 +201,6 @@ public class RefreshView extends View {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        Log.e(getClass().getName(),"onLayout()执行");
         super.onLayout(changed, left, top, right, bottom);
         initContentAttr(getMeasuredWidth(), getMeasuredHeight());
         resetCircles();
@@ -217,16 +208,9 @@ public class RefreshView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.e(getClass().getName(),"onDraw()执行");
         for (Circle circle : mCircles) {
             mPaint.setColor(circle.color);
             canvas.drawCircle(circle.x + getPaddingLeft(), circle.y + getPaddingTop(), circle.r, mPaint);
-        }
-        if (!isStateInitialized){
-            if (mOriginState==STATE_PREPARED){
-                prepareToStart();
-            }
-            isStateInitialized = true;
         }
     }
 
@@ -284,6 +268,14 @@ public class RefreshView extends View {
         mCircles.add(LEFT, circleLeft);
         mCircles.add(RIGHT, circleRight);
         mCircles.add(CENTER, circleCenter);
+        if (mOriginState==STATE_PREPARED){
+            circleLeft.x = mMinRadius;
+            circleLeft.r = mMinRadius;
+            circleCenter.x = mContentWidth / 2;
+            circleCenter.r = mMaxRadius;
+            circleRight.x = mContentWidth - mMinRadius;
+            circleRight.r = mMinRadius;
+        }
     }
 
     class Circle {
